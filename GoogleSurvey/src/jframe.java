@@ -51,7 +51,7 @@ public class jframe extends JFrame implements ActionListener, ChangeListener {
 		} else if (e.getSource() == b2){
 			if(tf2.getText() == "enter column name array"){
 				questionTypeScreen();
-			}
+			} 
 		} else if (e.getSource() == bMultiChoice){
 			multiChoiceScreen();
 		} else if (e.getSource() == bLinearScale){
