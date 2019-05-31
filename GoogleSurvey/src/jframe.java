@@ -5,26 +5,30 @@ import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Scanner;
 public class jframe extends JFrame implements ActionListener{
 
 	JTextField tf1, tf2;
-	JLabel l1, l1b, l3;
+	JLabel l1, l1b, l1c, l3;
 	JButton b1, b2, bCheckbox, bMultiChoice, bLinearScale;
 	JSlider s1;
-	Student[] responces;
+	Student[] student;
 	int currentColumn;
 	int questionType;
 	final int WIDTH = 600;
 	final int HEIGHT = 400;
 	
-	jframe() {
+	jframe(){
 		l1 = new JLabel("Welcome to Jacob's and Rory's Medway Polling System!");
 		l1.setBounds(WIDTH/2-175, HEIGHT/8, 350, 25);
 		l1b = new JLabel("Make sure to make the sheet public, and not apart of the TVDSB school board so anyone can access it");
 		l1b.setBounds(WIDTH/2-300, HEIGHT*3/4, 600, 25);
 		tf1 = new JTextField("Enter your URL for the Google Sheet");
 		tf1.setBounds(WIDTH/2-250, HEIGHT/4, 500, 25);
+		l1c = new JLabel("Make sure to copy update.txt into the folder, GoogleSurvey");
+		l1c.setBounds(WIDTH/2-250, HEIGHT/3, 500, 25);
 		b1 = new JButton("Confirm");
 		b1.setBounds((WIDTH/2-50), (HEIGHT/2)-25, 100, 50);
 		b1.addActionListener(this);
@@ -32,13 +36,14 @@ public class jframe extends JFrame implements ActionListener{
 		add(l1);
 		add(b1);
 		add(tf1);
+		add(l1c);
 		setSize(WIDTH, HEIGHT);
 		setLayout(null);
 		setVisible(true);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args)  throws FileNotFoundException{
 		// TODO Auto-generated method stub
 		SwingUtilities.invokeLater(()->new jframe());
 		//new jframe();
@@ -52,7 +57,11 @@ public class jframe extends JFrame implements ActionListener{
 			if(true /*textfield link is valid*/){
 				collectData();
 				tf1.setText("Success!");
-				validateEmails();
+				try {
+					validateEmails();
+				} catch (FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
 				columnScreen();
 			} else {
 				tf1.setText("That link was not valid, check that everything should work.");
@@ -82,22 +91,48 @@ public class jframe extends JFrame implements ActionListener{
 		} 
 	
 	}
-	public void collectData(){
+	public static void collectData(){
+		//from google
+	}
+	
+	public static void validateEmails() throws FileNotFoundException{
+		Student[] students = getEmails("update.txt");
+	}
+	
+	public static Student[] getEmails(String fileName) throws FileNotFoundException{
 		
+        File file = new File(fileName);
+        Scanner parser = new Scanner(new FileReader(file));
+       
+        int length = 0;
+        String[] item = new String[length];
+        String[] item2 = new String[length];
+ 
+        // checks if there is another entry, and puts it in the array
+        while (parser.hasNextLine()) {
+            length++;
+            for (int i = 0; i < item.length; i++) {
+                item2[i] = item[i];
+            }
+            item = new String[length];
+            for (int i = 0; i < item2.length; i++) {
+                item[i] = item2[i];
+            }
+            item2 = new String[length];
+            item[length - 1] = parser.nextLine();
+        }
+        Student[] stu = new Student[length];
+        for(int i = 0; i < length; i ++){
+        	stu[i] = new Student();
+        	String[] items = item[i].split(",");
+        	stu[i].lName = items[0];
+        	stu[i].fName = items[1];
+        	stu[i].sNum = items[3];
+        }
+        return stu;
 	}
 	
-	public void validateEmails(){
-		getEmails();
-	}
-	
-	public void getEmails(){
-//		File file = new File("xxx");
-//		Scanner in = new Scanner(new FileReader(file));
-//		int length = 0;
-//		String[] item = new String[length];
-	}
-	
-	public void columnScreen(){ // displays the second screen, where the userpicks the column
+	public void columnScreen(){ // displays the second screen, where the user picks the column
 		b1.setVisible(false);
 		tf1.setVisible(false);
 		l1b.setVisible(false);
